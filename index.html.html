@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be My Valentine 💖</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+      background: #ffb6c1;
+      position: relative;
+      touch-action: manipulation; /* Safari friendly */
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 30%, #ffc0cb 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, #ffd1dc 0%, transparent 45%),
+        radial-gradient(circle at 50% 70%, #ffb7c5 0%, transparent 50%);
+      opacity: 0.6;
+      z-index: 0;
+    }
+
+    .tree {
+      position: fixed;
+      bottom: 0;
+      font-size: 120px;
+      animation: sway 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .tree.left { left: 10px; }
+    .tree.right { right: 10px; animation-delay: 2s; }
+
+    @keyframes sway {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(3deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      z-index: 2;
+      position: relative;
+      max-width: 420px;
+    }
+
+    h1 { font-size: 2.3rem; }
+    p  { font-size: 1.4rem; margin-bottom: 30px; }
+
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    #yesBtn {
+      background-color: #ff4d6d;
+      color: white;
+      z-index: 3;
+    }
+
+    #noBtn {
+      background-color: #ccc;
+      position: relative;
+    }
+
+    /* Nervous shake + tap illusion */
+    .shake {
+      animation: shake 0.35s;
+    }
+
+    @keyframes shake {
+      0%   { transform: scale(1) translateX(0); }
+      25%  { transform: scale(1.03) translateX(-4px); }
+      50%  { transform: scale(1.03) translateX(4px); }
+      75%  { transform: scale(1.03) translateX(-4px); }
+      100% { transform: scale(1) translateX(0); }
+    }
+
+    .falling {
+      position: fixed;
+      top: -50px;
+      font-size: 22px;
+      animation: fall linear forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+      animation-delay: 2s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="tree left">🌸🌳</div>
+  <div class="tree right">🌸🌳</div>
+
+  <div class="card" id="intro">
+    <h1>🌯 U OWE ME CHIPOTLE 🌯</h1>
+    <p>Before anything else… this must be addressed.</p>
+    <button id="continueBtn">Okay fine 😅</button>
+  </div>
+
+  <script>
+    // Falling blossoms
+    const emojis = ["🌸","🌸","🌸","🌸","🌸","😻❤️","🐱💖"];
+    setInterval(() => {
+      const item = document.createElement("div");
+      item.className = "falling";
+      item.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+      item.style.left = Math.random() * 100 + "vw";
+      item.style.fontSize = Math.random() * 14 + 18 + "px";
+      item.style.animationDuration = Math.random() * 2 + 4 + "s";
+      document.body.appendChild(item);
+      setTimeout(() => item.remove(), 7000);
+    }, 120);
+
+    document.getElementById("continueBtn").addEventListener("click", () => {
+      document.getElementById("intro").innerHTML = `
+        <h1>Hey my love 💕</h1>
+        <p><strong>Will you be my Valentine, Logan?</strong></p>
+        <div class="btn-row">
+          <button id="yesBtn">Yes 💖</button>
+          <button id="noBtn">No 🙄</button>
+        </div>
+      `;
+
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+
+      let interactions = 0;
+
+      function reactNo() {
+        interactions++;
+
+        if (interactions === 1) {
+          // Safari-safe feedback
+          if (navigator.vibrate) navigator.vibrate(40); // ignored on iOS Safari
+          noBtn.classList.add("shake");
+          setTimeout(() => noBtn.classList.remove("shake"), 350);
+        } else {
+          const offsetX = (Math.random() * 140) - 70;
+          const offsetY = Math.random() * 80 + 40;
+          noBtn.style.position = "absolute";
+          noBtn.style.left = `calc(50% + ${offsetX}px)`;
+          noBtn.style.top  = `calc(60% + ${offsetY}px)`;
+        }
+      }
+
+      // Pointer events = Safari + touch + mouse
+      noBtn.addEventListener("pointerenter", reactNo);
+      noBtn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        reactNo();
+      });
+
+      yesBtn.addEventListener("click", () => {
+        document.body.innerHTML = `
+          <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            flex-direction:column;
+            background:#ffb6c1;
+            font-family:'Comic Sans MS', cursive;
+            text-align:center;
+            padding:20px;
+          ">
+            <h1>YOU BETTER SAY YES IM YOUR HUSBAND!!! 💘🥰</h1>
+            <p class="fade-in" style="font-size:1.3rem; max-width:700px;">
+              I love you, and I hope this isn’t the last Valentine we have together.
+              I love you from the bottom of my heart.
+              I hope to one day have you walk down the path in your pretty white dress,
+              and that we can make a happy family with an amazing home —
+              a place we can always have together.
+              Until death do us part ❤️
+            </p>
+          </div>
+        `;
+      });
+    });
+  </script>
+
+</body>
+</html>
